@@ -1,10 +1,14 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"io"
 	"os"
+
+	"github.com/Taurin190/go-data-migration"
+	"github.com/Taurin190/go-data-migration/service"
 )
 
 const usageMessage = "" +
@@ -12,20 +16,26 @@ const usageMessage = "" +
 	data_migration is data migration script between databases.`
 
 type option struct {
-	version    bool
-	sourceHost string
-	sourcePort int
+	version   bool
+	srcHost   string
+	srcPort   int
+	srcDB     string
+	srcDriver string
 }
 
 const (
-	sourceHostDoc = `source host to retrieve data and schema. `
-	sourcePortDoc = `source port to retrieve data and schema. `
+	srcHostDoc   = `source host to retrieve data and schema. `
+	srcPortDoc   = `source port to retrieve data and schema. `
+	srcDBDoc     = `source database to retrieve data and schema`
+	srcDriverDoc = `source database driver. you can choose mysqlDB, mariaDB and mongoDB.`
 )
 
 func init() {
 	flag.BoolVar(&opt.version, "version", false, "print version")
-	flag.StringVar(&opt.sourceHost, "src-host", "localhost", sourceHostDoc)
-	flag.IntVar(&opt.sourcePort, "src-port", 3306, sourcePortDoc)
+	flag.StringVar(&opt.srcHost, "src-host", "localhost", srcHostDoc)
+	flag.IntVar(&opt.srcPort, "src-port", 3306, srcPortDoc)
+	flag.StringVar(&opt.srcDB, "src-db", "", srcDBDoc)
+	flag.StringVar(&opt.srcDriver, "src-driver", "mysql", srcDriverDoc)
 }
 
 func usage() {
@@ -46,9 +56,26 @@ func main() {
 }
 
 func run(r io.Reader, w io.Writer, opt *option) error {
+	ctx := context.Background()
+
 	if opt.version {
 		fmt.Fprintln(w, "0.0.1")
 		return nil
 	}
-	return nil
+
+	var sds data_migration.DBService
+
+	switch opt.srcDriver {
+	default:
+		return fmt.Errorf("unknown -src-driver: %s", opt.srcDriver)
+	case "mysql":
+		fmt.Fprintf(w, "selected %s driver for src database\n", opt.srcDriver)
+		sds = mysqlservice.CreateMySQLService()
+	case "mongo":
+		fmt.Fprintf(w, "selected %s driver for src database\n", opt.srcDriver)
+	case "maria":
+		fmt.Fprintf(w, "selected %s driver for src database\n", opt.srcDriver)
+	}
+
+	return sds.FetchSchema(ctx)
 }
