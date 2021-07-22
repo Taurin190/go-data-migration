@@ -63,14 +63,14 @@ func run(r io.Reader, w io.Writer, opt *option) error {
 		return nil
 	}
 
-	var sds go_data_migration.DBService
+	var sds data_migration.DBService
 
 	switch opt.srcDriver {
 	default:
 		return fmt.Errorf("unknown -src-driver: %s", opt.srcDriver)
 	case "mysql":
 		fmt.Fprintf(w, "selected %s driver for src database\n", opt.srcDriver)
-		sds = mysqlservice.CreateMySQLService()
+		sds = service.CreateMySQLService()
 	case "mongo":
 		fmt.Fprintf(w, "selected %s driver for src database\n", opt.srcDriver)
 	case "maria":
