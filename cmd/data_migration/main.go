@@ -7,7 +7,7 @@ import (
 	"io"
 	"os"
 
-	"github.com/Taurin190/go-data-migration"
+	"github.com/Taurin190/go-data-migration/data_migration"
 	"github.com/Taurin190/go-data-migration/service"
 )
 

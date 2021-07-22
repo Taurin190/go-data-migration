@@ -1,4 +1,4 @@
-package go_data_migration
+package data_migration
 
 import "context"
 

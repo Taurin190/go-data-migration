@@ -1,12 +1,12 @@
-package mysqlservice
+package service
 
 import (
 	"context"
-	"github.com/Taurin190/go-data-migration"
+	"github.com/Taurin190/go-data-migration/data_migration"
 )
 
 type MySQLService struct {
-	service go_data_migration.DBService
+	service data_migration.DBService
 }
 
 func (m *MySQLService) FetchSchema(context.Context) error {
@@ -25,6 +25,6 @@ func (m *MySQLService) Insert(context.Context) error {
 	return nil
 }
 
-func CreateMySQLService() go_data_migration.DBService {
+func CreateMySQLService() data_migration.DBService {
 	return &MySQLService{}
 }
