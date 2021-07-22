@@ -1,7 +1,7 @@
 package mysqlservice
 
 import (
-	".."
+	"github.com/Taurin190/go-data-migration"
 	"context"
 )
 
