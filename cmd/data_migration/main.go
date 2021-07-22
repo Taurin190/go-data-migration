@@ -63,7 +63,7 @@ func run(r io.Reader, w io.Writer, opt *option) error {
 		return nil
 	}
 
-	var sds data_migration.DBService
+	var sds go_data_migration.DBService
 
 	switch opt.srcDriver {
 	default:
