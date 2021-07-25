@@ -16,18 +16,18 @@ const usageMessage = "" +
 	data_migration is data migration script between databases.`
 
 type option struct {
-	version   bool
-	srcHost   string
-	srcPort   int
-	srcDB     string
-	srcDriver string
+	version bool
+	srcHost string
+	srcPort int
+	srcDB   string
+	driver  string
 }
 
 const (
-	srcHostDoc   = `source host to retrieve data and schema. `
-	srcPortDoc   = `source port to retrieve data and schema. `
-	srcDBDoc     = `source database to retrieve data and schema`
-	srcDriverDoc = `source database driver. you can choose mysqlDB, mariaDB and postgreSQL.`
+	srcHostDoc = `source host to retrieve data and schema. `
+	srcPortDoc = `source port to retrieve data and schema. `
+	srcDBDoc   = `source database to retrieve data and schema`
+	driverDoc  = `database driver to migrate. you can choose mysql for now.`
 )
 
 func init() {
@@ -35,7 +35,7 @@ func init() {
 	flag.StringVar(&opt.srcHost, "src-host", "localhost", srcHostDoc)
 	flag.IntVar(&opt.srcPort, "src-port", 3306, srcPortDoc)
 	flag.StringVar(&opt.srcDB, "src-db", "", srcDBDoc)
-	flag.StringVar(&opt.srcDriver, "src-driver", "mysql", srcDriverDoc)
+	flag.StringVar(&opt.driver, "src-driver", "mysql", driverDoc)
 }
 
 func usage() {
@@ -63,21 +63,18 @@ func run(r io.Reader, w io.Writer, opt *option) error {
 		return nil
 	}
 
-	var sds data_migration.DBService
+	var ds data_migration.DBService
 
-	switch opt.srcDriver {
+	switch opt.driver {
 	default:
-		return fmt.Errorf("unknown -src-driver: %s", opt.srcDriver)
+		return fmt.Errorf("unknown -src-driver: %s", opt.driver)
 	case "mysql":
-		fmt.Fprintf(w, "selected %s driver for src database\n", opt.srcDriver)
-		sds = service.CreateMySQLService()
-	case "postgre":
-		fmt.Fprintf(w, "selected %s driver for src database\n", opt.srcDriver)
-	case "maria":
-		fmt.Fprintf(w, "selected %s driver for src database\n", opt.srcDriver)
+		fmt.Fprintf(w, "selected %s driver for database\n", opt.driver)
+		ds = service.CreateMySQLService()
 	}
 
-	app := data_migration.Create(sds)
+	var sdb = data_migration.GetDatabaseInfo(opt.srcHost, opt.srcPort, opt.srcDB, "", "")
+	app := data_migration.Create(ds, *sdb)
 
 	return app.Run(ctx, r)
 }

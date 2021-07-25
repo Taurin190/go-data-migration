@@ -7,10 +7,29 @@ import (
 
 type DataMigration struct {
 	sds DBService
+	sdb DatabaseInfo
 }
 
-func Create(sds DBService) *DataMigration {
-	return &DataMigration{sds: sds}
+type DatabaseInfo struct {
+	host     string
+	port     int
+	database string
+	username string
+	password string
+}
+
+func GetDatabaseInfo(host string, port int, db string, username string, password string) *DatabaseInfo {
+	return &DatabaseInfo{
+		host:     host,
+		port:     port,
+		database: db,
+		username: username,
+		password: password,
+	}
+}
+
+func Create(sds DBService, sdb DatabaseInfo) *DataMigration {
+	return &DataMigration{sds: sds, sdb: sdb}
 }
 
 type DBService interface {
