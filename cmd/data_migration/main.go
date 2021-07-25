@@ -27,7 +27,7 @@ const (
 	srcHostDoc   = `source host to retrieve data and schema. `
 	srcPortDoc   = `source port to retrieve data and schema. `
 	srcDBDoc     = `source database to retrieve data and schema`
-	srcDriverDoc = `source database driver. you can choose mysqlDB, mariaDB and mongoDB.`
+	srcDriverDoc = `source database driver. you can choose mysqlDB, mariaDB and postgreSQL.`
 )
 
 func init() {
@@ -71,11 +71,13 @@ func run(r io.Reader, w io.Writer, opt *option) error {
 	case "mysql":
 		fmt.Fprintf(w, "selected %s driver for src database\n", opt.srcDriver)
 		sds = service.CreateMySQLService()
-	case "mongo":
+	case "postgre":
 		fmt.Fprintf(w, "selected %s driver for src database\n", opt.srcDriver)
 	case "maria":
 		fmt.Fprintf(w, "selected %s driver for src database\n", opt.srcDriver)
 	}
 
-	return sds.FetchSchema(ctx)
+	app := data_migration.Create(sds)
+
+	return app.Run(ctx, r)
 }

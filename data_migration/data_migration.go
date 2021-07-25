@@ -1,12 +1,16 @@
 package data_migration
 
-import "context"
+import (
+	"context"
+	"io"
+)
 
 type DataMigration struct {
+	sds DBService
 }
 
-func Create() *DataMigration {
-	return &DataMigration{}
+func Create(sds DBService) *DataMigration {
+	return &DataMigration{sds: sds}
 }
 
 type DBService interface {
@@ -16,6 +20,10 @@ type DBService interface {
 	Insert(context.Context) error
 }
 
-func (w *DataMigration) Run() error {
+func (w *DataMigration) Run(ctx context.Context, r io.Reader) error {
+	err := w.sds.FetchSchema(ctx)
+	if err != nil {
+		return err
+	}
 	return nil
 }
